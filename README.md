@@ -129,6 +129,16 @@ streamlit run app.py
 
 Open **http://localhost:8501** in your browser. Upload a resume, paste a job description, hit **Analyze Match**.
 
+### Run the model-listing spike
+
+The provider-agnostic spike uses the same `LLM_*` configuration as the application and lists the model metadata returned by the configured OpenAI-compatible provider:
+
+```powershell
+python -m spikes.openai_compatible_model_listing
+```
+
+The output includes only fields returned by the provider's Models API. Rate limits, pricing, capabilities, and full model-card details are not standardized by the OpenAI-compatible API and may therefore be unavailable.
+
 ---
 
 ## 📁 Project Structure
@@ -138,6 +148,8 @@ Resume_JobDescriptionMatcher/
 ├── app.py              # Streamlit UI — layout, styling, user interaction
 ├── llm_config.py        # Provider-neutral LLM configuration
 ├── matcher.py           # Core logic — PDF parsing, embeddings, LLM calls
+├── spikes/
+│   └── openai_compatible_model_listing.py
 ├── requirements.txt     # Python dependencies
 ├── .env                 # API key (not committed — see .gitignore)
 ├── .gitignore
