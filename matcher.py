@@ -1,16 +1,18 @@
 import pdfplumber
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-from groq import Groq
+from openai import OpenAI
 import os
 import json
-from dotenv import load_dotenv
-
-load_dotenv()
+from llm_config import load_llm_config
 
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+llm_config = load_llm_config()
+client_kwargs = {"api_key": llm_config.api_key}
+if llm_config.base_url:
+    client_kwargs["base_url"] = llm_config.base_url
+client = OpenAI(**client_kwargs)
 
 
 def extract_resume_text(uploaded_file):
@@ -46,9 +48,9 @@ Return ONLY valid JSON (no markdown, no preamble, no explanation) in this exact 
 }}"""
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
-        max_tokens=1000,
-        temperature=0.3,
+        model=llm_config.model,
+        max_tokens=llm_config.max_tokens,
+        temperature=llm_config.temperature,
         response_format={"type": "json_object"},
         messages=[{"role": "user", "content": prompt}]
     )

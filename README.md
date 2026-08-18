@@ -48,7 +48,7 @@ FitScore combines two different AI techniques, each doing what it's best at:
          ▼                                 ▼
 ┌─────────────────────┐        ┌─────────────────────────┐
 │  Embedding Model      │        │   LLM Reasoning Layer   │
-│  (Sentence-Transform.)│        │   (Groq · Llama 3.3 70B)│
+│  (Sentence-Transform.)│        │ (OpenAI-compatible LLM) │
 │                       │        │                          │
 │  → Cosine similarity  │        │  → Matching skills       │
 │  → Match Score (%)    │        │  → Missing skills        │
@@ -77,7 +77,7 @@ Using both together gives a score you can trust *and* an explanation you can act
 |---|---|---|
 | Frontend/UI | [Streamlit](https://streamlit.io) | Fast to build, easy to deploy, ideal for ML-driven apps |
 | Embeddings | [Sentence-Transformers](https://www.sbert.net/) (`all-MiniLM-L6-v2`) | Runs locally, free, no API cost, fast inference |
-| LLM Reasoning | [Groq API](https://groq.com) (Llama 3.3 70B) | Free tier, extremely low latency, strong reasoning |
+| LLM Reasoning | OpenAI-compatible LLM provider | Configurable through the `LLM_*` environment variables |
 | PDF Parsing | [pdfplumber](https://github.com/jsvine/pdfplumber) | Reliable text extraction from resume PDFs |
 | Similarity Scoring | [scikit-learn](https://scikit-learn.org) (cosine similarity) | Standard, well-tested vector comparison |
 
@@ -89,7 +89,7 @@ Using both together gives a score you can trust *and* an explanation you can act
 
 ### Prerequisites
 - Python 3.10+ 
-- A free [Groq API key](https://console.groq.com)
+- An API key from an OpenAI-compatible LLM provider
 
 ### Installation
 
@@ -112,10 +112,14 @@ pip install -r requirements.txt
 Create a `.env` file in the project root:
 
 ```
-GROQ_API_KEY=your_groq_api_key_here
+LLM_API_KEY=your_api_key_here
+LLM_BASE_URL=https://api.openai.com/v1
+LLM_MODEL=your_model_name_here
+LLM_TEMPERATURE=0.3
+LLM_MAX_TOKENS=1000
 ```
 
-> Get a free key at [console.groq.com](https://console.groq.com) — no credit card required.
+The `LLM_BASE_URL` and `LLM_MODEL` values can be changed for any provider that supports the OpenAI SDK-compatible API format. Examples are documented in `.env.example`.
 
 ### Run it
 
@@ -132,6 +136,7 @@ Open **http://localhost:8501** in your browser. Upload a resume, paste a job des
 ```
 Resume_JobDescriptionMatcher/
 ├── app.py              # Streamlit UI — layout, styling, user interaction
+├── llm_config.py        # Provider-neutral LLM configuration
 ├── matcher.py           # Core logic — PDF parsing, embeddings, LLM calls
 ├── requirements.txt     # Python dependencies
 ├── .env                 # API key (not committed — see .gitignore)
