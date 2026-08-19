@@ -113,4 +113,4 @@ if analyze_clicked:
 
 # ---- Footer ----
 st.divider()
-st.caption("Built with Streamlit + Groq (Llama 3.3) + Sentence Transformers. Your data isn't stored anywhere.")
+st.caption("Built with Streamlit + an OpenAI-compatible LLM provider + Sentence Transformers. Your data isn't stored anywhere.")
