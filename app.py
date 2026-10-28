@@ -335,5 +335,5 @@ if result:
             st.button("↺ New analysis", on_click=reset, width="stretch")
 
 render("""
-    <div class="fs-footer">FitScore · Built with Streamlit, Groq and Sentence Transformers · Your data isn't stored anywhere.</div>
+    <div class="fs-footer">FitScore · Built with Streamlit, an OpenAI-compatible LLM and Sentence Transformers · Your data isn't stored anywhere.</div>
 """)

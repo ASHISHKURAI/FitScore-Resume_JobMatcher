@@ -15,7 +15,8 @@ Built to solve a real problem: most resumes never make it past an ATS or a first
 - ✅ **See matching skills** — what's already working in your favor
 - ❌ **See missing skills** — what the role wants that your resume doesn't show
 - 💡 **Get actionable suggestions** — specific, not generic, on how to close the gap
-- ⚡ **Instant results** — powered by a fast, free LLM backend (Groq + Llama 3.3)
+- 📄 **Download a PDF report** — keep your score, skills, suggestions and the job description to review later
+- ⚡ **Instant results** — powered by any OpenAI-compatible LLM provider (Groq, OpenAI, Gemini, Mistral, xAI...)
 
 ---
 
@@ -53,7 +54,7 @@ FitScore combines two different AI techniques, each doing what it's best at:
          ▼                                 ▼
 ┌─────────────────────┐        ┌─────────────────────────┐
 │  Embedding Model      │        │   LLM Reasoning Layer   │
-│  (Sentence-Transform.)│        │   (Groq · Llama 3.3 70B)│
+│  (Sentence-Transform.)│        │ (OpenAI-compatible LLM) │
 │                       │        │                          │
 │  → Cosine similarity  │        │  → Matching skills       │
 │  → Match Score (%)    │        │  → Missing skills        │
@@ -70,7 +71,7 @@ FitScore combines two different AI techniques, each doing what it's best at:
 
 **Why two models instead of one?**
 - **Embeddings (local, free)** are fast and great at *semantic similarity* — they answer "how close are these two documents in meaning?" without needing an API call.
-- **An LLM (Groq)** is better at *structured reasoning* — pulling out specific skills, comparing them individually, and writing human-readable suggestions. Embeddings alone can't do this well; LLMs alone are slower and costlier for a raw similarity score.
+- **An LLM (any OpenAI-compatible provider)** is better at *structured reasoning* — pulling out specific skills, comparing them individually, and writing human-readable suggestions. Embeddings alone can't do this well; LLMs alone are slower and costlier for a raw similarity score.
 
 Using both together gives a score you can trust *and* an explanation you can act on.
 
@@ -82,9 +83,10 @@ Using both together gives a score you can trust *and* an explanation you can act
 |---|---|---|
 | Frontend/UI | [Streamlit](https://streamlit.io) | Fast to build, easy to deploy, ideal for ML-driven apps |
 | Embeddings | [Sentence-Transformers](https://www.sbert.net/) (`all-MiniLM-L6-v2`) | Runs locally, free, no API cost, fast inference |
-| LLM Reasoning | [Groq API](https://groq.com) (Llama 3.3 70B) | Free tier, extremely low latency, strong reasoning |
+| LLM Reasoning | OpenAI-compatible LLM provider | Configurable through the `LLM_*` environment variables |
 | PDF Parsing | [pdfplumber](https://github.com/jsvine/pdfplumber) | Reliable text extraction from resume PDFs |
 | Similarity Scoring | [scikit-learn](https://scikit-learn.org) (cosine similarity) | Standard, well-tested vector comparison |
+| PDF Report | [fpdf2](https://py-pdf.github.io/fpdf2/) | Lightweight, pure-Python PDF generation |
 
 **100% free to run** — no paid APIs, no cloud costs. Everything here fits inside free tiers.
 
@@ -94,7 +96,7 @@ Using both together gives a score you can trust *and* an explanation you can act
 
 ### Prerequisites
 - Python 3.10+ 
-- A free [Groq API key](https://console.groq.com)
+- An API key from an OpenAI-compatible LLM provider
 
 ### Installation
 
@@ -117,10 +119,26 @@ pip install -r requirements.txt
 Create a `.env` file in the project root:
 
 ```
-GROQ_API_KEY=your_groq_api_key_here
+LLM_API_KEY=your_api_key_here
+LLM_BASE_URL=https://api.openai.com/v1
+LLM_MODEL=your_model_name_here
+LLM_TEMPERATURE=0.3
+LLM_MAX_TOKENS=1000
 ```
 
-> Get a free key at [console.groq.com](https://console.groq.com) — no credit card required.
+The `LLM_BASE_URL` and `LLM_MODEL` values can be changed for any provider that supports the OpenAI SDK-compatible API format. Examples are documented in `.env.example`.
+
+For example, to use Groq's free tier:
+
+```
+LLM_BASE_URL=https://api.groq.com/openai/v1
+LLM_MODEL=openai/gpt-oss-120b
+LLM_MAX_TOKENS=2000
+```
+
+> Reasoning models such as `gpt-oss` use part of the token budget for thinking, so give them `LLM_MAX_TOKENS=2000` or more.
+
+Resume uploads are limited to **5 MB** (set in `.streamlit/config.toml`).
 
 ### Run it
 
@@ -130,14 +148,30 @@ streamlit run app.py
 
 Open **http://localhost:8501** in your browser. Upload a resume, paste a job description, hit **Analyze Match**.
 
+### Run the model-listing spike
+
+The provider-agnostic spike uses the same `LLM_*` configuration as the application and lists the model metadata returned by the configured OpenAI-compatible provider:
+
+```powershell
+python -m spikes.openai_compatible_model_listing
+```
+
+The output includes only fields returned by the provider's Models API. Rate limits, pricing, capabilities, and full model-card details are not standardized by the OpenAI-compatible API and may therefore be unavailable.
+
 ---
 
 ## 📁 Project Structure
 
 ```
 Resume_JobDescriptionMatcher/
+├── .streamlit/
+│   └── config.toml      # Theme and 5 MB upload limit
+├── assets/              # README screenshots
 ├── app.py              # Streamlit UI — layout, styling, user interaction
-├── matcher.py           # Core logic — PDF parsing, embeddings, LLM calls
+├── llm_config.py        # Provider-neutral LLM configuration
+├── matcher.py           # Core logic — PDF parsing, embeddings, LLM calls, PDF report
+├── spikes/
+│   └── openai_compatible_model_listing.py
 ├── requirements.txt     # Python dependencies
 ├── .env                 # API key (not committed — see .gitignore)
 ├── .gitignore
@@ -162,7 +196,7 @@ This project was built to explore practical, end-to-end AI engineering: combinin
 
 - [ ] Support DOCX resumes in addition to PDF
 - [ ] Multi-resume comparison against a single JD
-- [ ] Downloadable PDF report of the analysis
+- [x] Downloadable PDF report of the analysis
 - [ ] Resume rewrite suggestions inline, not just gap list
 - [ ] Support pasting a JD via URL
 

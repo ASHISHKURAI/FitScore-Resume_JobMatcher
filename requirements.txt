@@ -2,6 +2,7 @@ streamlit
 pdfplumber
 sentence-transformers
 scikit-learn
-groq
+openai
 python-dotenv
+rich
 fpdf2
