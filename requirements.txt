@@ -1,0 +1,7 @@
+streamlit
+pdfplumber
+sentence-transformers
+scikit-learn
+groq
+python-dotenv
+fpdf2

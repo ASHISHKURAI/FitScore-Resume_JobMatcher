@@ -1,0 +1,13 @@
+[server]
+# Max resume upload size in MB
+maxUploadSize = 5
+
+[client]
+toolbarMode = "minimal"
+
+[theme]
+base = "dark"
+primaryColor = "#7C3AED"
+backgroundColor = "#0B0F19"
+secondaryBackgroundColor = "#151A2D"
+textColor = "#E5E7EB"

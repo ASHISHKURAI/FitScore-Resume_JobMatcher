@@ -21,12 +21,17 @@ Built to solve a real problem: most resumes never make it past an ATS or a first
 
 ## 🖼️ Preview
 
-> *Add a screenshot or GIF of the app here once deployed — this is the first thing people look at.*
+**Upload your resume and paste a job description**
 
-```
-[ Screenshot: two-panel upload UI ]
-[ Screenshot: match score + skill breakdown ]
-```
+![FitScore home screen: upload your resume and paste a job description](assets/fitscore-home.png)
+
+**Get your match score and skill breakdown**
+
+![FitScore results: match score, skill stats, matching and missing skills](assets/fitscore-results.png)
+
+**Review suggestions and download the report as a PDF**
+
+![FitScore suggestions and PDF download](assets/fitscore-suggestions.png)
 
 ---
 
