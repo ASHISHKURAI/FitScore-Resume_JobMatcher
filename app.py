@@ -1,8 +1,9 @@
+
 import streamlit as st
-from matcher import extract_resume_text, get_match_score, get_skill_gaps
+from matcher import extract_resume_text, get_match_score, get_skill_gaps, create_pdf_report
 
 st.set_page_config(page_title="FitScore", page_icon="🎯", layout="wide")
-# ---- Custom styling ----
+
 st.markdown("""
     <style>
     .main-header {
@@ -45,14 +46,11 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ---- Header ----
 st.markdown("<div class='main-header'><h1>🎯 FitScore</h1><p>See how well your resume matches a job description, instantly.</p></div>", unsafe_allow_html=True)
 
-# ---- Session state to hold results across reruns ----
 if "analyzed" not in st.session_state:
     st.session_state.analyzed = False
 
-# ---- Two-panel input layout ----
 left, right = st.columns(2)
 
 with left:
@@ -64,14 +62,12 @@ with right:
     jd_text = st.text_area("Paste JD", height=280, label_visibility="collapsed",
                             placeholder="Paste the full job description here...")
 
-st.write("")  # spacing
+st.write("")
 
-# ---- Centered analyze button ----
 btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 1])
 with btn_col2:
     analyze_clicked = st.button("🔍 Analyze Match", type="primary", use_container_width=True)
 
-# ---- Results ----
 if analyze_clicked:
     if not resume_file or not jd_text.strip():
         st.warning("Please upload a resume and paste a job description.")
@@ -111,6 +107,17 @@ if analyze_clicked:
         for suggestion in gaps["suggestions"]:
             st.write(f"- {suggestion}")
 
-# ---- Footer ----
+        st.divider()
+
+        pdf_bytes = create_pdf_report(score, gaps)
+        st.download_button(
+            label="⬇️ Download Report as PDF",
+            data=pdf_bytes,
+            file_name="FitScore_Report.pdf",
+            mime="application/pdf",
+            type="primary",
+            use_container_width=False
+        )
+
 st.divider()
-st.caption("Built with Streamlit + Groq (Llama 3.3) + Sentence Transformers. Your data isn't stored anywhere.")
+st.caption("FitScore · Built with Streamlit + Groq (Llama 3.3) + Sentence Transformers · Your data isn't stored anywhere.")
